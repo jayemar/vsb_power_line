@@ -1,0 +1,28 @@
+# Referencing paper A Complex Classification Approach of Partial Discharges
+# from Covered Conductors in Real Environment from Mišák et al.
+
+# Maps to Table 2
+'max_distance': 10
+'max_height_ratio': 0.25
+'max_height': 100
+'max_ticks_removal': 500
+'threshold_coeff': 1
+'mother_wavelet': 'db4'
+'decomposition_level': 1
+
+# Settings for relevant features from Table 1
+# Used for scipy.signal.find_peaks function
+peak_finder_args:
+  'height': 10.0
+  'distance': 20
+# Had some initial luck with the following settings:
+# peak_finder_args:
+#   'height': 2.5
+#   'threshold': 2.5
+#   'distance': 1000
+#   'prominence': 5
+#   'width': 1
+#   'wlen': 300
+
+# num_lines should be divisible by 3 to get all 3 phases at once
+'num_lines': 501

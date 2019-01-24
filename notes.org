@@ -1,0 +1,39 @@
+* Terminology
+** Definitions
+** Acronyms
+- ACSR :: Aluminium Core Steel Reinforced (overhead lines)
+- CC :: Covered Conductors
+- CV :: Cross Validation
+- DSI :: Discrete spectral interference (radio emissions)
+- DT :: Decision Tree
+- EBN ::
+- LB :: Leaderboard (Kaggle)
+- MI :: Mutual Information
+- MV :: Medium Voltage (overhead lines)
+- NFS :: Noise and False-peak Suppression
+- PD :: partial discharge
+- SOMA :: Self-Organizing Migrating Algorithm 
+- RF :: Random Forest
+- RPI :: Random pulses interference (lightning, switching operations, corona)
+- XLPE :: Cross-Linked Polyethylene
+        
+* Ideas
+- To use any kind of wavelet transformation is very reasonable, butterworth filter was helpful for me to suppress the sine shape, DWT to obtain its close approximation - sometimes it is disrupted, and denoising with feature extractions are the alchemy of this competition. - from "Competition Kickoff"
+- [[https://github.com/Microsoft/LightGBM][LightGBM]]
+  
+* Task List
+** TODO Try Something [0/3]
+- [ ] [Re-]Read "Complex Classifiation of PD" pdf
+- [ ] Poke around with PyWavelets
+- [ ] Implemente high pass filter to remove 50 Hz signal
+- [ ] What is boosting?
+** TODO Check performance metrics
+- [ ] ROC score
+- [ ] Precision and Recall 
+- [ ] F-score
+* References
+- [X] [[https://www.kaggle.com/c/vsb-power-line-fault-detection/discussion/75771][Competition Kickoff]]
+- [ ] [[https://www.dropbox.com/s/2ltuvpw1b1ms2uu/A%20Complex%20Classification%20Approach%20of%20Partial%20Discharges%20from%20Covered%20Conductors%20in%20Real%20Environment%20%28preprint%29.pdf?dl=0#][Complex Classification for PD (ref in competition kickoff)]]
+- [ ] [[http://downloads.hindawi.com/journals/jece/2015/174538.pdf][Advanced PD Recognition Strategy (ref)]]
+- [ ] [[https://vibrosystm.com/wp-content/uploads/PA011-a.pdf][Novel Approach to PD Monitoring]]
+
