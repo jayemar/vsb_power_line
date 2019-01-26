@@ -5,7 +5,7 @@
 'max_distance': 10
 'max_height_ratio': 0.25
 'max_height': 100
-'max_ticks_removal': 500
+'max_ticks_removal': 5000
 'threshold_coeff': 1
 'mother_wavelet': 'db4'
 'decomposition_level': 1
