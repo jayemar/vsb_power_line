@@ -24,5 +24,5 @@ peak_finder_args:
 #   'width': 1
 #   'wlen': 300
 
-# num_lines should be divisible by 3 to get all 3 phases at once
-'num_lines': 501
+# batch_size should be divisible by 3 to get all 3 phases at once
+'batch_size': 501

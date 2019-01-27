@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-"""Handles the Extract portion of the E-T-L pipeline
+"""Handles the Loader portion of the E-T-L pipeline
 
 Usage:
-  extractor.py <ml_cfg> [-r <train_count>] [-e <test_count>] [-v <validation_count>]
+  loader.py <ml_cfg> [-r <train_count>] [-e <test_count>] [-v <validation_count>]
 
 Options:
   -h --help         Show this config
@@ -14,24 +14,24 @@ Options:
 from docopt import docopt
 
 from etl import ETL
+from extractor import Extractor
+from translator import Translator
 from utils import etl_cli
-from utils import get_data_generator
 from utils import handle_config
 
 
-class Extractor(ETL):
+class Loader(ETL):
 
     def retrieve_data(self, ml_cfg):
         self._ml_cfg = handle_config(ml_cfg)
-        return get_data_generator('train', self.ml_cfg.get('batch_size'))
-
-    def get_test_data(self):
-        if not self.ml_cfg:
-            raise Exception("ml_cfg not yet set via retrieve_data method")
-        return get_data_generator('test', self.ml_cfg.get('batch_size'))
+        return self.data_in.retrieve_data(ml_cfg)
 
 
 if __name__ == '__main__':
     args = docopt(__doc__)
+    loader = Loader()
+    translator = Translator()
     extractor = Extractor()
-    etl_cli(extractor, args)
+    translator.set_data_input(extractor)
+    loader.set_data_input(translator)
+    etl_cli(loader, args)
