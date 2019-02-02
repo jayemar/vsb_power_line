@@ -1,9 +1,0 @@
-arrow
-docopt
-joblib
-numpy
-pandas
-progressbar2
-PyYAML
-scikit-learn
-scipy

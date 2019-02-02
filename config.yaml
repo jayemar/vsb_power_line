@@ -1,3 +1,4 @@
+---
 # Referencing paper A Complex Classification Approach of Partial Discharges
 # from Covered Conductors in Real Environment from Mišák et al.
 
@@ -11,7 +12,7 @@
 'threshold_coeff': 1
 'mother_wavelet': 'db4'
 'decomposition_level': 2
-t
+
 # Settings for relevant features from Table 1
 # Used for scipy.signal.find_peaks function
 peak_finder_args:
