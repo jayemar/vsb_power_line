@@ -28,9 +28,8 @@ from .utils import within_ratio
 
 class Translator(ETL):
 
-    def retrieve_data(self, ml_cfg):
-        self._ml_cfg = handle_config(ml_cfg)
-        return self.data_in.retrieve_data(ml_cfg)
+    def __init__(self, env_cfg):
+        super(Translator, self).__init__(env_cfg)
 
 
 if __name__ == '__main__':

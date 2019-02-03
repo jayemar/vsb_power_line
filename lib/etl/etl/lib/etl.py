@@ -20,12 +20,13 @@ class ETL:
 
     def retrieve_data(self, ml_cfg):
         """Pass config file to retrieve generator for training data"""
-        raise NotImplementedError("'retrieve_data' not implemented")
+        self.ml_cfg = ml_cfg
+        return self.data_in.retrieve_data(ml_cfg)
 
     def get_test_data(self):
         """Retrieve generator for test data based on previous config"""
-        raise NotImplementedError("'get_test_data' not implemented")
+        return self.data_in.get_test_data()
 
     def get_validation_data(self):
         """Retrieve generator for validation data based on previous config"""
-        raise NotImplementedError("'get_validation_data' not implemented")
+        return self.data_in.get_validation_data()

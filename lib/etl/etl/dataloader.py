@@ -22,17 +22,16 @@ from .lib.utils import handle_config
 
 class DataLoader(ETL):
 
-    def __init__(self, env_cfg=None):
-        super(DataLoader, self).__init__(env_cfg)
+    def __init__(self, env_cfg={}):
         self.extractor = Extractor(env_cfg)
         self.translator = Translator(env_cfg)
         self.loader = Loader(env_cfg)
 
         self.translator.set_data_input(self.extractor)
         self.loader.set_data_input(self.translator)
+        self.set_data_input(self.loader)
 
-    def retrieve_data(self, ml_cfg):
-        self.ml_cfg = handle_config(ml_cfg)
+        super(DataLoader, self).__init__(env_cfg)
 
 
 if __name__ == '__main__':

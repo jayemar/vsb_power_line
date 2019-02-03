@@ -11,7 +11,7 @@ Options:
 """
 from docopt import docopt
 
-import yaml
+import arrow
 
 from etl.dataloader import DataLoader
 from etl.lib.utils import clean_args
@@ -21,8 +21,17 @@ from model import build_model
 
 
 if __name__ == '__main__':
-    args = clean_args(docopt(__doc__))
-    cfg = handle_config(args.get('cfg_file'))
+    args = docopt(__doc__)
+    cfg = clean_args(handle_config(args.get('<cfg_file>')))
     env_cfg = cfg.get('env_cfg', {})
-    dl = DataLoader(args.get('<env_cfg>'))
-    train_gen = dl.retrieve_data(args.get('<ml_cfg>'))
+    dl = DataLoader(cfg.get('env_cfg'))
+
+    start_time = arrow.utcnow()
+    print("Start time:   {}".format(start_time))
+    train_gen = dl.retrieve_data(cfg.get('ml_cfg'))
+    for i in range(3):
+        data = next(train_gen)
+        print("Retrieved training batch {}".format(i + 1))
+    end_time = arrow.utcnow()
+    print("End time:     {}".format(end_time))
+    print("Elapsed time: {}".format(end_time - start_time))

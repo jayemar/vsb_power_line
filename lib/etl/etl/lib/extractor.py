@@ -13,8 +13,6 @@ Options:
 """
 from docopt import docopt
 
-from pyarrow import parquet as pq
-
 from .etl import ETL
 from .utils import etl_cli
 from .utils import get_data_generator
@@ -23,14 +21,22 @@ from .utils import handle_config
 
 class Extractor(ETL):
 
+    def __init__(self, env_cfg={}):
+        super(Extractor, self).__init__(env_cfg)
+
     def retrieve_data(self, ml_cfg):
-        self._ml_cfg = handle_config(ml_cfg)
-        return get_data_generator('train', self.ml_cfg.get('batch_size'))
+        self.ml_cfg = handle_config(ml_cfg)
+        print(self.ml_cfg)
+        return get_data_generator('train',
+                                  self.ml_cfg.get('batch_size'),
+                                  self.env_cfg.get('data_dir'))
 
     def get_test_data(self):
         if not self.ml_cfg:
             raise Exception("ml_cfg not yet set via retrieve_data method")
-        return get_data_generator('test', self.ml_cfg.get('batch_size'))
+        return get_data_generator('test',
+                                  self.ml_cfg.get('batch_size'),
+                                  self.env_cfg.get('data_dir'))
 
 
 if __name__ == '__main__':

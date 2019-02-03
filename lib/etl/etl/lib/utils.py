@@ -5,7 +5,6 @@ from pathlib import Path
 from pyarrow import parquet as pq
 import yaml
 
-DATA_DIR = "../../data/"
 TEST_START = 8712  # First 8711 lines are training data
 
 
@@ -27,17 +26,17 @@ def clean_args(args):
     }
 
 
-def get_data_generator(data_type, num_lines_per_batch):
+def get_data_generator(data_type, num_lines_per_batch, data_dir='./data'):
     """data_type should be either 'train' or 'test'"""
     if data_type not in ['train', 'test']:
         raise ValueError("'data_type' must be one of 'train'/'test'")
     start = 0 if data_type == 'train' else 8712
     end = start + num_lines_per_batch
     meta_file = "metadata_{}.csv".format(data_type)
-    meta_df = pd.read_csv(Path(DATA_DIR, meta_file))
+    meta_df = pd.read_csv(Path(data_dir, meta_file))
     while True:
         data = pq.read_pandas(
-            Path(DATA_DIR, data_type + '.parquet'),
+            Path(data_dir, data_type + '.parquet'),
             columns=[str(i) for i in range(start, end)]
         ).to_pandas().values.T
         meta = meta_df.iloc[start: end]
