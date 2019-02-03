@@ -91,32 +91,30 @@ def wavelet_transform(batch, cfg):
     """Perform wavelet transform on batch of signals and return DataFrame"""
     wavelet = cfg.get('mother_wavelet')
     level = cfg.get('decomposition_level')
+    max_height = cfg.get('max_height')
+    height_ratio = cfg.get('max_height_ratio')
+    max_dist = cfg.get('max_distance')
+    max_peaks = cfg.get('max_ticks_removal')
+    peak_args = cfg.get('peak_finder_args')
 
     details = list()
     for signal in batch:
         cA_, *cD_ = pywt.wavedec(signal, wavelet, level=level)
         details.append(cD_[0])
-    return details
-
-
-def misc():
-    max_height = cfg.get('max_height')
-    height_ratio = cfg.get('max_height_ratio')
-    max_dist = cfg.get('max_distance')
-    max_peaks = cfg.get('max_ticks_removal')
-    trimmed_dfs = [remove_symmetric_pulses(df, height_ratio, max_dist, max_peaks)
-                   for df in dfs]
-    trimmed_dfs = [df[abs(df.peak_heights) < max_height] for df in trimmed_dfs]
-    trimmed_dfs = [sort_and_reindex(df) for df in trimmed_dfs]
-
-
-def handle_symmetric_pulses(dfs, cfg):
-    max_height = cfg.get('max_height')
-    height_ratio = cfg.get('max_height_ratio')
-    max_dist = cfg.get('max_distance')
-    max_peaks = cfg.get('max_ticks_removal')
-    return [remove_symmetric_pulses(df, height_ratio, max_dist, max_peaks)
-            for df in dfs]
+        dfs = [
+            sort_and_reindex(get_peak_info(cD, peak_args))
+            for cD in details
+        ]
+        trimmed_dfs = [
+            remove_symmetric_pulses(df, height_ratio, max_dist, max_peaks)
+            for df in dfs
+        ]
+        trimmed_dfs = [
+            df[abs(df.peak_heights) < max_height]
+            for df in trimmed_dfs
+        ]
+        trimmed_dfs = [sort_and_reindex(df) for df in trimmed_dfs]
+        return trimmed_dfs
 
 
 class Translator(ETL):
@@ -127,35 +125,13 @@ class Translator(ETL):
     def retrieve_data(self, ml_cfg):
         """Pass config file to retrieve generator for training data"""
         self.ml_cfg = ml_cfg
-        max_height = ml_cfg.get('max_height')
-        height_ratio = ml_cfg.get('max_height_ratio')
-        max_dist = ml_cfg.get('max_distance')
-        max_peaks = ml_cfg.get('max_ticks_removal')
-
-        data_gen = self.data_in.retrieve_data(ml_cfg)
-
-        peak_args = ml_cfg.get('peak_finder_args')
-        for data, meta in data_gen:
-            details = wavelet_transform(data, ml_cfg)
-            dfs = [
-                sort_and_reindex(get_peak_info(cD, peak_args))
-                for cD in details
-            ]
-            trimmed_dfs = [
-                remove_symmetric_pulses(df, height_ratio, max_dist, max_peaks)
-                for df in dfs
-            ]
-            trimmed_dfs = [
-                df[abs(df.peak_heights) < max_height]
-                for df in trimmed_dfs
-            ]
-            trimmed_dfs = [sort_and_reindex(df) for df in trimmed_dfs]
-            yield trimmed_dfs, meta
+        for data, meta in self.data_in.retrieve_data(self.ml_cfg):
+            yield wavelet_transform(data, self.ml_cfg), meta
 
     def get_test_data(self):
         """Retrieve generator for test data based on previous config"""
-        data_gen = self.data_in.get_test_data()
-        return data_gen
+        for data, meta in self.data_in.get_test_data():
+            yield wavelet_transform(data, self.ml_cfg), meta
 
 
 if __name__ == '__main__':

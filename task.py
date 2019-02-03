@@ -35,3 +35,13 @@ if __name__ == '__main__':
     end_time = arrow.utcnow()
     print("End time:     {}".format(end_time))
     print("Elapsed time: {}".format(end_time - start_time))
+
+    start_time = arrow.utcnow()
+    print("Start time:   {}".format(start_time))
+    test_gen = dl.get_test_data()
+    for i in range(3):
+        data = next(test_gen)
+        print("Retrieved test batch {}".format(i + 1))
+    end_time = arrow.utcnow()
+    print("End time:     {}".format(end_time))
+    print("Elapsed time: {}".format(end_time - start_time))
