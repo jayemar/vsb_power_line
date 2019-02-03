@@ -138,6 +138,7 @@ def within_ratio(h1, h2, ratio):
             resp = True
     return resp
 
+
 def remove_symmetric_pulses(df, height_ratio, max_dist, train_len):
     working_df = df.copy()
     to_remove = set()
