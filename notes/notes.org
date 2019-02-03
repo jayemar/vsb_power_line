@@ -2,7 +2,9 @@
 ** Definitions
 ** Acronyms
 - ACSR :: Aluminium Core Steel Reinforced (overhead lines)
+- cA :: Approximate coefficients (result of waveform transform; compare to cD)
 - CC :: Covered Conductors
+- cD :: Detailed coefficients (result of waveform transform; compare to cA)
 - CV :: Cross Validation
 - DSI :: Discrete spectral interference (radio emissions)
 - DT :: Decision Tree
@@ -22,10 +24,10 @@
 - [[https://github.com/Microsoft/LightGBM][LightGBM]]
   
 * Task List
-** TODO Try Something [0/3]
+** TODO Try Something [2/4]
 - [ ] [Re-]Read "Complex Classifiation of PD" pdf
-- [ ] Poke around with PyWavelets
-- [ ] Implemente high pass filter to remove 50 Hz signal
+- [X] Poke around with PyWavelets
+- [X] Implemente high pass filter to remove 50 Hz signal
 - [ ] What is boosting?
 ** TODO Check performance metrics
 - [ ] ROC score
