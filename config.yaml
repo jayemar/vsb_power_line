@@ -6,7 +6,7 @@ env_cfg:
   data_dir: /home/jreinhart/projects/vsb_power_line/data
 
 ml_cfg:
-  batch_size: 1  # _size should be divisible by 3 to get all 3 phases at once
+  batch_size: 51  # _size should be divisible by 3 to get all 3 phases at once
   epochs: 1
 
 # Maps to Table 2

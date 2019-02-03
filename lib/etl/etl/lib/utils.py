@@ -44,25 +44,6 @@ def get_data_generator(data_type, num_lines_per_batch, data_dir='./data'):
         yield data, meta
 
 
-def sort_and_reindex(df, col_name):
-    """Sort DataFrame base on column name and reindex"""
-    df = df.sort_values(col_name, inplace=False)
-    df = df.reset_index(inplace=False, drop=True)
-    return df
-
-
-def within_ratio(h1, h2, ratio):
-    """Check if h2 (height2) has the opposite sign of h1 (height1)
-    and is smaller by an amount within the given ratio
-    """
-    resp = False
-    if (h1 < 0 and h2 > 0) or (h1 > 0 and h2 < 0):
-        if (((abs(h1) * (1 - ratio)) < abs(h2))
-                and ((abs(h1) * (1 + ratio)) > abs(h2))):
-            resp = True
-    return resp
-
-
 def etl_cli(instance, args):
     """Handles calling the E/T/L classes from the command line"""
     ml_cfg = handle_config(args.get('<ml_cfg>'))
