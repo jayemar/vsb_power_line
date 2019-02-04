@@ -39,8 +39,11 @@ def get_data_generator(data_type, num_lines_per_batch, data_dir='./data'):
             Path(data_dir, data_type + '.parquet'),
             columns=[str(i) for i in range(start, end)]
         ).to_pandas().values.T
+        if data.size == 0:
+            break
         meta = meta_df.iloc[start: end]
         start = end
+        end += num_lines_per_batch
         yield data, meta
 
 

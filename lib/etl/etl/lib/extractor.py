@@ -26,7 +26,6 @@ class Extractor(ETL):
 
     def retrieve_data(self, ml_cfg):
         self.ml_cfg = handle_config(ml_cfg)
-        print(self.ml_cfg)
         return get_data_generator('train',
                                   self.ml_cfg.get('batch_size'),
                                   self.env_cfg.get('data_dir'))

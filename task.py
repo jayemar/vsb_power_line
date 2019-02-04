@@ -12,6 +12,9 @@ Options:
 from docopt import docopt
 
 import arrow
+import joblib
+import pdb
+import pickle
 
 from etl.dataloader import DataLoader
 from etl.lib.utils import clean_args
@@ -27,21 +30,31 @@ if __name__ == '__main__':
     dl = DataLoader(cfg.get('env_cfg'))
 
     start_time = arrow.utcnow()
+    print("Retrieving training data via task.py")
     print("Start time:   {}".format(start_time))
     train_gen = dl.retrieve_data(cfg.get('ml_cfg'))
-    for i in range(3):
-        data = next(train_gen)
-        print("Retrieved training batch {}".format(i + 1))
+    try:
+        data_list, meta = next(train_gen)
+        joblib.dump(meta, 'training_meta.pkl')
+        joblib.dump(data_list, 'training_df.pkl')
+    except Exception as err:
+        print(err)
+        pdb.set_trace()
     end_time = arrow.utcnow()
     print("End time:     {}".format(end_time))
     print("Elapsed time: {}".format(end_time - start_time))
 
     start_time = arrow.utcnow()
+    print("Retrieving test data via task.py")
     print("Start time:   {}".format(start_time))
     test_gen = dl.get_test_data()
-    for i in range(3):
-        data = next(test_gen)
-        print("Retrieved test batch {}".format(i + 1))
+    try:
+        data_list, meta = next(test_gen)
+        joblib.dump(meta, 'test_meta.pkl')
+        joblib.dump(data_list, 'test_df.pkl')
+    except Exception as err:
+        print(err)
+        pdb.set_trace()
     end_time = arrow.utcnow()
     print("End time:     {}".format(end_time))
     print("Elapsed time: {}".format(end_time - start_time))

@@ -13,6 +13,7 @@ Options:
 """
 from docopt import docopt
 
+import arrow
 from functools import partial
 import pandas as pd
 import pywt
@@ -98,23 +99,24 @@ def wavelet_transform(batch, cfg):
     peak_args = cfg.get('peak_finder_args')
 
     details = list()
-    for signal in batch:
+    for i, signal in enumerate(batch):
         cA_, *cD_ = pywt.wavedec(signal, wavelet, level=level)
         details.append(cD_[0])
-        dfs = [
-            sort_and_reindex(get_peak_info(cD, peak_args))
-            for cD in details
-        ]
-        trimmed_dfs = [
-            remove_symmetric_pulses(df, height_ratio, max_dist, max_peaks)
-            for df in dfs
-        ]
-        trimmed_dfs = [
-            df[abs(df.peak_heights) < max_height]
-            for df in trimmed_dfs
-        ]
-        trimmed_dfs = [sort_and_reindex(df) for df in trimmed_dfs]
-        return trimmed_dfs
+
+    dfs = [
+        sort_and_reindex(get_peak_info(cD, peak_args))
+        for cD in details
+    ]
+    trimmed_dfs = [
+        remove_symmetric_pulses(df, height_ratio, max_dist, max_peaks)
+        for df in dfs
+    ]
+    trimmed_dfs = [
+        df[abs(df.peak_heights) < max_height]
+        for df in trimmed_dfs
+    ]
+    trimmed_dfs = [sort_and_reindex(df) for df in trimmed_dfs]
+    return trimmed_dfs
 
 
 class Translator(ETL):

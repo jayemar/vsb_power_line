@@ -13,6 +13,8 @@ Options:
 """
 from docopt import docopt
 
+import pandas as pd
+
 from .etl import ETL
 from .extractor import Extractor
 from .translator import Translator
@@ -25,6 +27,30 @@ class Loader(ETL):
     def __init__(self, env_cfg={}):
         super(Loader, self).__init__(env_cfg)
 
+    def retrieve_data(self, ml_cfg):
+        """Pass config file to retrieve generator for training data"""
+        self.ml_cfg = ml_cfg
+        data_dfs = list()
+        meta_df = pd.DataFrame()
+        batch_count = 1
+        for data, meta in self.data_in.retrieve_data(self.ml_cfg):
+            data_dfs.extend(data)
+            meta_df = pd.concat([meta_df, meta])
+            batch_count += 1
+        print("Concatenated {} training batches".format(batch_count))
+        yield data_dfs, meta_df
+
+    def get_test_data(self):
+        """Retrieve generator for test data based on previous config"""
+        data_dfs = list()
+        meta_df = pd.DataFrame()
+        batch_count = 1
+        for data, meta in self.data_in.get_test_data():
+            data_dfs.extend(data)
+            meta_df = pd.concat([meta_df, meta])
+            batch_count += 1
+        print("Concatenated {} test batches".format(batch_count))
+        yield data_dfs, meta_df
 
 if __name__ == '__main__':
     args = docopt(__doc__)
