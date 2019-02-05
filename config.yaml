@@ -8,6 +8,7 @@ env_cfg:
 ml_cfg:
   batch_size: 51  # _size should be divisible by 3 to get all 3 phases at once
   epochs: 1
+  max_batches: 5
 
   # Maps to Table 2
   max_distance: 10
@@ -33,3 +34,5 @@ ml_cfg:
   #   width: 1
   #   wlen: 300
 
+model_cfg:
+  n_estimators: 100

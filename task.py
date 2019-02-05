@@ -34,9 +34,9 @@ if __name__ == '__main__':
     print("Start time:   {}".format(start_time))
     train_gen = dl.retrieve_data(cfg.get('ml_cfg'))
     try:
-        data_list, meta = next(train_gen)
-        joblib.dump(meta, 'training_meta.pkl')
-        joblib.dump(data_list, 'training_df.pkl')
+        train_data, train_meta = next(train_gen)
+        joblib.dump(train_meta, 'training_meta.pkl')
+        joblib.dump(train_data, 'training_data.pkl')
     except Exception as err:
         print(err)
         pdb.set_trace()
@@ -49,12 +49,21 @@ if __name__ == '__main__':
     print("Start time:   {}".format(start_time))
     test_gen = dl.get_test_data()
     try:
-        data_list, meta = next(test_gen)
-        joblib.dump(meta, 'test_meta.pkl')
-        joblib.dump(data_list, 'test_df.pkl')
+        test_data, test_meta = next(test_gen)
+        joblib.dump(test_meta, 'test_meta.pkl')
+        joblib.dump(test_data, 'test_data.pkl')
     except Exception as err:
         print(err)
         pdb.set_trace()
     end_time = arrow.utcnow()
     print("End time:     {}".format(end_time))
     print("Elapsed time: {}".format(end_time - start_time))
+
+    model = build_model(cfg.get('model_cfg'))
+
+    import pdb; pdb.set_trace()
+
+    training_result = model.fit(train_data, train_meta)
+    print(training_result)
+
+    test_predictions = model.predict(test_data)

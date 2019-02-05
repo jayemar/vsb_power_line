@@ -13,6 +13,7 @@ Options:
 """
 from docopt import docopt
 
+import numpy as np
 import pandas as pd
 
 from .etl import ETL
@@ -20,6 +21,10 @@ from .extractor import Extractor
 from .translator import Translator
 from .utils import etl_cli
 from .utils import handle_config
+
+
+def df_to_one_hot(df, field_name, num_labels=2):
+    return np.eye(num_labels)[df[field_name]].astype('int16')
 
 
 class Loader(ETL):
@@ -38,7 +43,7 @@ class Loader(ETL):
             meta_df = pd.concat([meta_df, meta])
             batch_count += 1
         print("Concatenated {} training batches".format(batch_count))
-        yield data_dfs, meta_df
+        yield data_dfs, df_to_one_hot(meta_df, 'target', 2)
 
     def get_test_data(self):
         """Retrieve generator for test data based on previous config"""
