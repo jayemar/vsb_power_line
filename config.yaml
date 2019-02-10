@@ -4,6 +4,7 @@
 
 env_cfg:
   data_dir: /home/jreinhart/projects/vsb_power_line/data
+  translator_pool: 4
 
 ml_cfg:
   batch_size: 51  # _size should be divisible by 3 to get all 3 phases at once

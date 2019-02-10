@@ -13,6 +13,7 @@ Options:
 """
 from docopt import docopt
 
+from imblearn.over_sampling import SMOTE, ADASYN
 import numpy as np
 import pandas as pd
 
@@ -35,27 +36,32 @@ class Loader(ETL):
     def retrieve_data(self, ml_cfg):
         """Pass config file to retrieve generator for training data"""
         self.ml_cfg = ml_cfg
-        data_dfs = list()
+        data_list = list()
         meta_df = pd.DataFrame()
         batch_count = 1
         for data, meta in self.data_in.retrieve_data(self.ml_cfg):
-            data_dfs.extend(data)
+            data_list.extend(data)
             meta_df = pd.concat([meta_df, meta])
             batch_count += 1
         print("Concatenated {} training batches".format(batch_count))
-        yield data_dfs, df_to_one_hot(meta_df, 'target', 2)
+        data_resp = np.nan_to_num(np.array(data_list))
+        meta_resp = df_to_one_hot(meta_df, 'target', 2)
+        data_resp, meta_resp = ADASYN().fit_resample(data_resp, meta_resp)
+        meta_resp = np.squeeze(np.eye(2)[meta_resp].astype('int16'))
+        yield data_resp, meta_resp
 
     def get_test_data(self):
         """Retrieve generator for test data based on previous config"""
-        data_dfs = list()
+        data_list = list()
         meta_df = pd.DataFrame()
         batch_count = 1
         for data, meta in self.data_in.get_test_data():
-            data_dfs.extend(data)
+            data_list.extend(data)
             meta_df = pd.concat([meta_df, meta])
             batch_count += 1
         print("Concatenated {} test batches".format(batch_count))
-        yield data_dfs, meta_df
+        data_resp = np.nan_to_num(np.array(data_list))
+        yield data_resp, meta_df
 
 if __name__ == '__main__':
     args = docopt(__doc__)

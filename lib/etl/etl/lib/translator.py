@@ -15,6 +15,7 @@ from docopt import docopt
 
 import arrow
 from functools import partial
+from multiprocessing import Pool
 import pandas as pd
 import pywt
 from scipy import signal as dsp
@@ -23,6 +24,19 @@ from .etl import ETL
 from .extractor import Extractor
 from .utils import etl_cli
 from .utils import handle_config
+
+
+def classification_matrix(df):
+    return [
+        df[df.peak_heights > 0].shape[0],
+        df[df.peak_heights < 0].shape[0],
+        df.widths.max(),
+        df.widths.min(),
+        abs(df.peak_heights).max(),
+        abs(df.peak_heights).min(),
+        df.widths.mean(),
+        abs(df.peak_heights).mean()
+    ]
 
 
 def sort_and_reindex(df, col_name='peak_heights'):
@@ -88,8 +102,9 @@ def remove_symmetric_pulses(df, height_ratio, max_dist, train_len):
     return working_df
 
 
-def wavelet_transform(batch, cfg):
+def wavelet_transform(batch_meta, cfg):
     """Perform wavelet transform on batch of signals and return DataFrame"""
+    batch, meta = batch_meta
     wavelet = cfg.get('mother_wavelet')
     level = cfg.get('decomposition_level')
     max_height = cfg.get('max_height')
@@ -116,24 +131,34 @@ def wavelet_transform(batch, cfg):
         for df in trimmed_dfs
     ]
     trimmed_dfs = [sort_and_reindex(df) for df in trimmed_dfs]
-    return trimmed_dfs
+
+    matrices = [classification_matrix(df) for df in trimmed_dfs]
+    return matrices, meta
 
 
 class Translator(ETL):
 
-    def __init__(self, env_cfg):
+    def __init__(self, env_cfg={}):
         super(Translator, self).__init__(env_cfg)
+        self.env_cfg = env_cfg
 
     def retrieve_data(self, ml_cfg):
         """Pass config file to retrieve generator for training data"""
         self.ml_cfg = ml_cfg
-        for data, meta in self.data_in.retrieve_data(self.ml_cfg):
-            yield wavelet_transform(data, self.ml_cfg), meta
+        self.wvt = partial(wavelet_transform, cfg=ml_cfg)
+
+        pool = Pool(self.env_cfg.get('translator_pool', 1))
+        data_gen = self.data_in.retrieve_data(self.ml_cfg)
+        for data, meta in pool.imap(self.wvt, data_gen):
+            yield data, meta
+
 
     def get_test_data(self):
         """Retrieve generator for test data based on previous config"""
-        for data, meta in self.data_in.get_test_data():
-            yield wavelet_transform(data, self.ml_cfg), meta
+        pool = Pool(self.env_cfg.get('translator_pool', 1))
+        data_gen = self.data_in.get_test_data()
+        for data, meta in pool.imap(self.wvt, data_gen):
+            yield data, meta
 
 
 if __name__ == '__main__':
