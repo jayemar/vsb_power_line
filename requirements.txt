@@ -2,7 +2,7 @@ arrow==0.13.0
 autopep8==1.4.3
 awscli==1.16.87
 backcall==0.1.0
-bleach==3.1.0
+bleach==3.3.0
 bokeh==1.0.4
 botocore==1.12.77
 certifi==2018.11.29
